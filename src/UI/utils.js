@@ -74,16 +74,14 @@ export function findAnnotationAtPoint(x, y) {
   // Find rectangle/lines annotations
   for (let xTest = x - HIT_TEST_OFFSET; xTest <= x + HIT_TEST_OFFSET; xTest++) {
     for (let yTest = y - HIT_TEST_OFFSET; yTest <= y + HIT_TEST_OFFSET; yTest++) {
-      let candidate = document.elementFromPoint(xTest, yTest);
-      if (candidate) {
-        let type = candidate.getAttribute('data-pdf-annotate-type');
-        if (type) {
-          if (candidate.nodeName.toLowerCase() === 'rect' ||
-              candidate.nodeName.toLowerCase() === 'path') {
-            document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
-            return candidate;
-          }
-        }
+      const candidate = document.elementFromPoint(xTest, yTest);
+      if (!candidate) continue;
+      const type = candidate.getAttribute('data-pdf-annotate-type');
+      if (!type) continue;
+      if (candidate.nodeName.toLowerCase() === 'rect' ||
+          candidate.nodeName.toLowerCase() === 'path') {
+        document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
+        return candidate;
       }
     }
   }
