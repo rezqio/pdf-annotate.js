@@ -2,6 +2,8 @@ import createStyleSheet from 'create-stylesheet';
 
 export const BORDER_COLOR = '#00BFFF';
 
+export const HIT_TEST_OFFSET = 10;
+
 const userSelectStyleSheet = createStyleSheet({
   body: {
     '-webkit-user-select': 'none',
@@ -65,11 +67,38 @@ export function findSVGAtPoint(x, y) {
 export function findAnnotationAtPoint(x, y) {
   let svg = findSVGAtPoint(x, y);
   if (!svg) { return; }
+
+  // temporarily disable pointer events on textLayer
+  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "none";
+
+  // Find rectangle/lines annotations
+  for (let xTest = x - HIT_TEST_OFFSET; xTest <= x + HIT_TEST_OFFSET; xTest++) {
+    for (let yTest = y - HIT_TEST_OFFSET; yTest <= y + HIT_TEST_OFFSET; yTest++) {
+      const candidate = document.elementFromPoint(xTest, yTest);
+      if (!candidate) continue;
+      const type = candidate.getAttribute('data-pdf-annotate-type');
+      if (!type) continue;
+      if (candidate.nodeName.toLowerCase() === 'rect' ||
+          candidate.nodeName.toLowerCase() === 'path') {
+        document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
+        return candidate;
+      }
+    }
+  }
+  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
+
   let elements = svg.querySelectorAll('[data-pdf-annotate-type]');
 
   // Find a target element within SVG
   for (let i=0, l=elements.length; i<l; i++) {
     let el = elements[i];
+
+    // Skip over rectangle and lines
+    if (el.nodeName.toLowerCase() === 'rect' ||
+        el.nodeName.toLowerCase() === 'path') {
+      continue;
+    }
+
     if (pointIntersectsRect(x, y, getOffsetAnnotationRect(el))) {   
       return el;
     }

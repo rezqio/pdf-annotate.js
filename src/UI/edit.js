@@ -137,7 +137,7 @@ function handleDocumentClick(e) {
   // Remove current overlay
   let overlay = document.getElementById('pdf-annotate-edit-overlay');
   if (overlay) {
-    if (isDragging || e.target === overlay) {
+    if (isDragging) {
       return;
     }
 
@@ -315,9 +315,11 @@ function handleDocumentMouseup(e) {
     PDFJSAnnotate.getStoreAdapter().editAnnotation(documentId, annotationId, annotation);
   });
 
-  setTimeout(() => {
-    isDragging = false;
-  }, 0);
+  // Why tho
+  // setTimeout(function () {
+  //   isDragging = false;
+  // }, 0);
+  isDragging = false;
 
   overlay.style.background = '';
   overlay.style.cursor = '';
