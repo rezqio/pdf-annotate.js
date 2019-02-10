@@ -935,14 +935,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  for (var xTest = x - HIT_TEST_OFFSET; xTest <= x + HIT_TEST_OFFSET; xTest++) {
 	    for (var yTest = y - HIT_TEST_OFFSET; yTest <= y + HIT_TEST_OFFSET; yTest++) {
 	      var candidate = document.elementFromPoint(xTest, yTest);
-	      if (candidate) {
-	        var type = candidate.getAttribute('data-pdf-annotate-type');
-	        if (type) {
-	          if (candidate.nodeName.toLowerCase() === 'rect' || candidate.nodeName.toLowerCase() === 'path') {
-	            document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
-	            return candidate;
-	          }
-	        }
+	      if (!candidate) continue;
+	      var type = candidate.getAttribute('data-pdf-annotate-type');
+	      if (!type) continue;
+	      if (candidate.nodeName.toLowerCase() === 'rect' || candidate.nodeName.toLowerCase() === 'path') {
+	        document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
+	        return candidate;
 	      }
 	    }
 	  }
@@ -3517,6 +3515,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	var originX = void 0;
 	
 	/**
+	 * Clear text selection
+	 */
+	function clearSelection() {
+	  if (window.getSelection) {
+	    if (window.getSelection().removeAllRanges) {
+	      window.getSelection().removeAllRanges();
+	      window.getSelection().addRange(document.createRange());
+	    } else if (window.getSelection().empty) {
+	      window.getSelection().empty();
+	    }
+	  }
+	}
+	
+	/**
 	 * Get the current window selection as rects
 	 *
 	 * @return {Array} An Array of rects
@@ -3528,6 +3540,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var rects = range.getClientRects();
 	
 	    if (rects.length > 0 && rects[0].width > 0 && rects[0].height > 0) {
+	      clearSelection();
 	      return rects;
 	    }
 	  } catch (e) {}
