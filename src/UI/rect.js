@@ -18,6 +18,20 @@ let originY;
 let originX;
 
 /**
+ * Clear text selection
+ */
+function clearSelection() {
+  if (window.getSelection) {
+    if (window.getSelection().removeAllRanges) {
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(document.createRange());
+    } else if (window.getSelection().empty) {
+      window.getSelection().empty();
+    }
+  }
+}
+
+/**
  * Get the current window selection as rects
  *
  * @return {Array} An Array of rects
@@ -31,6 +45,7 @@ function getSelectionRects() {
     if (rects.length > 0 &&
         rects[0].width > 0 &&
         rects[0].height > 0) {
+      clearSelection();
       return rects;
     }
   } catch (e) {}
