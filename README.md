@@ -1,7 +1,4 @@
-# pdf-annotate.js (no longer maintained)
-
-[![build status](https://img.shields.io/travis/instructure/pdf-annotate.js.svg?style=flat-square)](https://travis-ci.org/instructure/pdf-annotate.js)
-[![code coverage](https://img.shields.io/coveralls/instructure/pdf-annotate.js.svg?style=flat-square)](https://coveralls.io/r/instructure/pdf-annotate.js)
+# pdf-annotate.js
 
 Annotation layer for [pdf.js](https://github.com/mozilla/pdf.js)
 
