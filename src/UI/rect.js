@@ -174,6 +174,8 @@ function saveRect(type, rects, color) {
       color = 'FFFF00';
     } else if (type === 'strikeout') {
       color = 'FF0000';
+    } else if (type === 'area') {
+      color = '0000FF';
     }
   }
 
