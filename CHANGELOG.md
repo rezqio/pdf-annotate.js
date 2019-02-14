@@ -10,4 +10,4 @@
 
 ## v1.0.0 (2018-12-21)
 
-* Forked from upstream: https://github.com/rezqio/pdf-annotate.js/tree/f56e8aa2027326894861ef6b060824137e79a1be
+* Forked from upstream: https://github.com/instructure/pdf-annotate.js/tree/f56e8aa2027326894861ef6b060824137e79a1be
