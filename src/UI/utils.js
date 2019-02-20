@@ -80,12 +80,12 @@ export function findAnnotationAtPoint(x, y) {
       if (!type) continue;
       if (candidate.nodeName.toLowerCase() === 'rect' ||
           candidate.nodeName.toLowerCase() === 'path') {
-        document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
+        document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
         return candidate;
       }
     }
   }
-  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
+  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
 
   let elements = svg.querySelectorAll('[data-pdf-annotate-type]');
 
