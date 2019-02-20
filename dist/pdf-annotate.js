@@ -939,12 +939,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var type = candidate.getAttribute('data-pdf-annotate-type');
 	      if (!type) continue;
 	      if (candidate.nodeName.toLowerCase() === 'rect' || candidate.nodeName.toLowerCase() === 'path') {
-	        document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
+	        document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
 	        return candidate;
 	      }
 	    }
 	  }
-	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
+	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
 	
 	  var elements = svg.querySelectorAll('[data-pdf-annotate-type]');
 	
