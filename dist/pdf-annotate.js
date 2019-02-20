@@ -3149,6 +3149,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  _enabled = true;
 	  (0, _event.addEventListener)('annotation:click', handleAnnotationClick);
+	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "none";
 	};
 	
 	/**
@@ -3163,6 +3164,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  _enabled = false;
 	  (0, _event.removeEventListener)('annotation:click', handleAnnotationClick);
+	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
 	};
 
 /***/ },

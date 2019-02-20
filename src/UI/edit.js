@@ -346,6 +346,7 @@ export function enableEdit () {
 
   _enabled = true;
   addEventListener('annotation:click', handleAnnotationClick);
+  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "none";
 };
 
 /**
@@ -358,5 +359,6 @@ export function disableEdit () {
 
   _enabled = false;
   removeEventListener('annotation:click', handleAnnotationClick);
+  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
 };
 
