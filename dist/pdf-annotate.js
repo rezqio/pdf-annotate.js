@@ -862,7 +862,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var BORDER_COLOR = exports.BORDER_COLOR = '#00BFFF';
 	
-	var HIT_TEST_OFFSET = exports.HIT_TEST_OFFSET = 10;
+	var HIT_TEST_OFFSET = exports.HIT_TEST_OFFSET = 5;
 	
 	var userSelectStyleSheet = (0, _createStylesheet2.default)({
 	  body: {
