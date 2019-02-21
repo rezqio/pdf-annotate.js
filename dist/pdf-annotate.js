@@ -2824,6 +2824,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  overlay.style.height = rect.height + 'px';
 	  overlay.style.border = OVERLAY_BORDER_SIZE + 'px solid ' + _utils.BORDER_COLOR;
 	  overlay.style.borderRadius = OVERLAY_BORDER_SIZE + 'px';
+	  overlay.style.cursor = 'pointer';
 	
 	  anchor.innerHTML = '×';
 	  anchor.setAttribute('href', 'javascript://');
