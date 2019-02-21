@@ -929,6 +929,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	
 	  // temporarily disable pointer events on textLayer
+	  var pointerEvents = document.getElementsByClassName('textLayer')[0].style.pointerEvents;
 	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "none";
 	
 	  // Find rectangle/lines annotations
@@ -939,12 +940,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var type = candidate.getAttribute('data-pdf-annotate-type');
 	      if (!type) continue;
 	      if (candidate.nodeName.toLowerCase() === 'rect' || candidate.nodeName.toLowerCase() === 'path') {
-	        document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
+	        document.getElementsByClassName('textLayer')[0].style.pointerEvents = pointerEvents;
 	        return candidate;
 	      }
 	    }
 	  }
-	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
+	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = pointerEvents;
 	
 	  var elements = svg.querySelectorAll('[data-pdf-annotate-type]');
 	

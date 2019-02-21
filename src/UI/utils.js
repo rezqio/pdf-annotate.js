@@ -69,6 +69,7 @@ export function findAnnotationAtPoint(x, y) {
   if (!svg) { return; }
 
   // temporarily disable pointer events on textLayer
+  const pointerEvents = document.getElementsByClassName('textLayer')[0].style.pointerEvents;
   document.getElementsByClassName('textLayer')[0].style.pointerEvents = "none";
 
   // Find rectangle/lines annotations
@@ -80,12 +81,12 @@ export function findAnnotationAtPoint(x, y) {
       if (!type) continue;
       if (candidate.nodeName.toLowerCase() === 'rect' ||
           candidate.nodeName.toLowerCase() === 'path') {
-        document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
+        document.getElementsByClassName('textLayer')[0].style.pointerEvents = pointerEvents;
         return candidate;
       }
     }
   }
-  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
+  document.getElementsByClassName('textLayer')[0].style.pointerEvents = pointerEvents;
 
   let elements = svg.querySelectorAll('[data-pdf-annotate-type]');
 
