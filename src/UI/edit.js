@@ -48,6 +48,7 @@ function createEditOverlay(target) {
   overlay.style.height = `${rect.height}px`;
   overlay.style.border = `${OVERLAY_BORDER_SIZE}px solid ${BORDER_COLOR}`;
   overlay.style.borderRadius = `${OVERLAY_BORDER_SIZE}px`;
+  overlay.style.cursor = 'pointer';
 
   anchor.innerHTML = '×';
   anchor.setAttribute('href', 'javascript://');
@@ -346,6 +347,7 @@ export function enableEdit () {
 
   _enabled = true;
   addEventListener('annotation:click', handleAnnotationClick);
+  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "none";
 };
 
 /**
@@ -358,5 +360,6 @@ export function disableEdit () {
 
   _enabled = false;
   removeEventListener('annotation:click', handleAnnotationClick);
+  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
 };
 

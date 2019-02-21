@@ -929,6 +929,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	
 	  // temporarily disable pointer events on textLayer
+	  var pointerEvents = document.getElementsByClassName('textLayer')[0].style.pointerEvents;
 	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "none";
 	
 	  // Find rectangle/lines annotations
@@ -939,12 +940,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var type = candidate.getAttribute('data-pdf-annotate-type');
 	      if (!type) continue;
 	      if (candidate.nodeName.toLowerCase() === 'rect' || candidate.nodeName.toLowerCase() === 'path') {
-	        document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
+	        document.getElementsByClassName('textLayer')[0].style.pointerEvents = pointerEvents;
 	        return candidate;
 	      }
 	    }
 	  }
-	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "auto";
+	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = pointerEvents;
 	
 	  var elements = svg.querySelectorAll('[data-pdf-annotate-type]');
 	
@@ -2823,6 +2824,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  overlay.style.height = rect.height + 'px';
 	  overlay.style.border = OVERLAY_BORDER_SIZE + 'px solid ' + _utils.BORDER_COLOR;
 	  overlay.style.borderRadius = OVERLAY_BORDER_SIZE + 'px';
+	  overlay.style.cursor = 'pointer';
 	
 	  anchor.innerHTML = '×';
 	  anchor.setAttribute('href', 'javascript://');
@@ -3149,6 +3151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  _enabled = true;
 	  (0, _event.addEventListener)('annotation:click', handleAnnotationClick);
+	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "none";
 	};
 	
 	/**
@@ -3163,6 +3166,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  _enabled = false;
 	  (0, _event.removeEventListener)('annotation:click', handleAnnotationClick);
+	  document.getElementsByClassName('textLayer')[0].style.pointerEvents = "";
 	};
 
 /***/ },
