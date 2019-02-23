@@ -2,7 +2,7 @@ import createStyleSheet from 'create-stylesheet';
 
 export const BORDER_COLOR = '#00BFFF';
 
-export const HIT_TEST_OFFSET = 10;
+export const HIT_TEST_OFFSET = 5;
 
 const userSelectStyleSheet = createStyleSheet({
   body: {
