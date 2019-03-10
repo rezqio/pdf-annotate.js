@@ -83,11 +83,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _StoreAdapter2 = _interopRequireDefault(_StoreAdapter);
 	
-	var _LocalStoreAdapter = __webpack_require__(8);
+	var _LocalStoreAdapter = __webpack_require__(10);
 	
 	var _LocalStoreAdapter2 = _interopRequireDefault(_LocalStoreAdapter);
 	
-	var _render = __webpack_require__(10);
+	var _render = __webpack_require__(12);
 	
 	var _render2 = _interopRequireDefault(_render);
 	
@@ -858,6 +858,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _createStylesheet2 = _interopRequireDefault(_createStylesheet);
 	
+	var _renderPoint = __webpack_require__(8);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var BORDER_COLOR = exports.BORDER_COLOR = '#00BFFF';
@@ -904,7 +906,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  for (var i = 0, l = elements.length; i < l; i++) {
 	    var el = elements[i];
-	    var rect = el.getBoundingClientRect();
+	    var rect = el.parentNode.getBoundingClientRect(); // accommodate for scaled svg containers
 	
 	    if (pointIntersectsRect(x, y, rect)) {
 	
@@ -1082,11 +1084,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	      break;
 	
 	    case 'rect':
+	      h = parseInt(el.getAttribute('height'), 10);
+	      w = parseInt(el.getAttribute('width'), 10);
+	      x = parseInt(el.getAttribute('x'), 10);
+	      y = parseInt(el.getAttribute('y'), 10);
+	      break;
 	    case 'svg':
 	      h = parseInt(el.getAttribute('height'), 10);
 	      w = parseInt(el.getAttribute('width'), 10);
 	      x = parseInt(el.getAttribute('x'), 10);
 	      y = parseInt(el.getAttribute('y'), 10);
+	
+	      if (el.parentNode.getAttribute('data-pdf-annotate-container')) {
+	        var _getMetadata = getMetadata(el.parentNode),
+	            viewport = _getMetadata.viewport;
+	
+	        if (viewport.scale > 1 && h == _renderPoint.POINT_SVG_SIZE && w == _renderPoint.POINT_SVG_SIZE) {
+	          h *= viewport.scale;
+	          w *= viewport.scale;
+	          x *= viewport.scale;
+	          y *= viewport.scale;
+	        }
+	      }
 	      break;
 	  }
 	
@@ -1121,8 +1140,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	function scaleUp(svg, rect) {
 	  var result = {};
 	
-	  var _getMetadata = getMetadata(svg),
-	      viewport = _getMetadata.viewport;
+	  var _getMetadata2 = getMetadata(svg),
+	      viewport = _getMetadata2.viewport;
 	
 	  Object.keys(rect).forEach(function (key) {
 	    result[key] = rect[key] * viewport.scale;
@@ -1141,8 +1160,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	function scaleDown(svg, rect) {
 	  var result = {};
 	
-	  var _getMetadata2 = getMetadata(svg),
-	      viewport = _getMetadata2.viewport;
+	  var _getMetadata3 = getMetadata(svg),
+	      viewport = _getMetadata3.viewport;
 	
 	  Object.keys(rect).forEach(function (key) {
 	    result[key] = rect[key] / viewport.scale;
@@ -1271,8 +1290,115 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.POINT_SVG_SIZE = undefined;
+	exports.default = renderPoint;
 	
-	var _uuid = __webpack_require__(9);
+	var _setAttributes = __webpack_require__(9);
+	
+	var _setAttributes2 = _interopRequireDefault(_setAttributes);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var POINT_SVG_SIZE = exports.POINT_SVG_SIZE = 25;
+	var D = 'M499.968 214.336q-113.832 0 -212.877 38.781t-157.356 104.625 -58.311 142.29q0 62.496 39.897 119.133t112.437 97.929l48.546 27.9 -15.066 53.568q-13.392 50.778 -39.06 95.976 84.816 -35.154 153.45 -95.418l23.994 -21.204 31.806 3.348q38.502 4.464 72.54 4.464 113.832 0 212.877 -38.781t157.356 -104.625 58.311 -142.29 -58.311 -142.29 -157.356 -104.625 -212.877 -38.781z';
+	
+	/**
+	 * Create SVGElement from an annotation definition.
+	 * This is used for anntations of type `comment`.
+	 *
+	 * @param {Object} a The annotation definition
+	 * @return {SVGElement} A svg to be rendered
+	 */
+	function renderPoint(a) {
+	  var outerSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	  var innerSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	  var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+	  var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+	
+	  (0, _setAttributes2.default)(outerSVG, {
+	    width: POINT_SVG_SIZE,
+	    height: POINT_SVG_SIZE,
+	    x: a.x,
+	    y: a.y
+	  });
+	
+	  (0, _setAttributes2.default)(innerSVG, {
+	    width: POINT_SVG_SIZE,
+	    height: POINT_SVG_SIZE,
+	    x: 0,
+	    y: POINT_SVG_SIZE * 0.05 * -1,
+	    viewBox: '0 0 1000 1000'
+	  });
+	
+	  (0, _setAttributes2.default)(rect, {
+	    width: POINT_SVG_SIZE,
+	    height: POINT_SVG_SIZE,
+	    stroke: '#000',
+	    fill: '#ff0'
+	  });
+	
+	  (0, _setAttributes2.default)(path, {
+	    d: D,
+	    strokeWidth: 50,
+	    stroke: '#000',
+	    fill: '#fff'
+	  });
+	
+	  innerSVG.appendChild(path);
+	  outerSVG.appendChild(rect);
+	  outerSVG.appendChild(innerSVG);
+	
+	  return outerSVG;
+	}
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = setAttributes;
+	var UPPER_REGEX = /[A-Z]/g;
+	
+	// Don't convert these attributes from camelCase to hyphenated-attributes
+	var BLACKLIST = ['viewBox'];
+	
+	var keyCase = function keyCase(key) {
+	  if (BLACKLIST.indexOf(key) === -1) {
+	    key = key.replace(UPPER_REGEX, function (match) {
+	      return '-' + match.toLowerCase();
+	    });
+	  }
+	  return key;
+	};
+	
+	/**
+	 * Set attributes for a node from a map
+	 *
+	 * @param {Node} node The node to set attributes on
+	 * @param {Object} attributes The map of key/value pairs to use for attributes
+	 */
+	function setAttributes(node, attributes) {
+	  Object.keys(attributes).forEach(function (key) {
+	    node.setAttribute(keyCase(key), attributes[key]);
+	  });
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _uuid = __webpack_require__(11);
 	
 	var _uuid2 = _interopRequireDefault(_uuid);
 	
@@ -1421,7 +1547,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1450,7 +1576,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1464,7 +1590,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _PDFJSAnnotate2 = _interopRequireDefault(_PDFJSAnnotate);
 	
-	var _appendChild = __webpack_require__(11);
+	var _appendChild = __webpack_require__(13);
 	
 	var _appendChild2 = _interopRequireDefault(_appendChild);
 	
@@ -1518,7 +1644,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1528,19 +1654,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = appendChild;
 	
-	var _objectAssign = __webpack_require__(12);
+	var _objectAssign = __webpack_require__(14);
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _renderLine = __webpack_require__(13);
+	var _renderLine = __webpack_require__(15);
 	
 	var _renderLine2 = _interopRequireDefault(_renderLine);
 	
-	var _renderPath = __webpack_require__(16);
+	var _renderPath = __webpack_require__(17);
 	
 	var _renderPath2 = _interopRequireDefault(_renderPath);
 	
-	var _renderPoint = __webpack_require__(17);
+	var _renderPoint = __webpack_require__(8);
 	
 	var _renderPoint2 = _interopRequireDefault(_renderPoint);
 	
@@ -1697,7 +1823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports) {
 
 	/*
@@ -1793,7 +1919,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1803,11 +1929,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = renderLine;
 	
-	var _setAttributes = __webpack_require__(14);
+	var _setAttributes = __webpack_require__(9);
 	
 	var _setAttributes2 = _interopRequireDefault(_setAttributes);
 	
-	var _normalizeColor = __webpack_require__(15);
+	var _normalizeColor = __webpack_require__(16);
 	
 	var _normalizeColor2 = _interopRequireDefault(_normalizeColor);
 	
@@ -1845,44 +1971,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 14 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = setAttributes;
-	var UPPER_REGEX = /[A-Z]/g;
-	
-	// Don't convert these attributes from camelCase to hyphenated-attributes
-	var BLACKLIST = ['viewBox'];
-	
-	var keyCase = function keyCase(key) {
-	  if (BLACKLIST.indexOf(key) === -1) {
-	    key = key.replace(UPPER_REGEX, function (match) {
-	      return '-' + match.toLowerCase();
-	    });
-	  }
-	  return key;
-	};
-	
-	/**
-	 * Set attributes for a node from a map
-	 *
-	 * @param {Node} node The node to set attributes on
-	 * @param {Object} attributes The map of key/value pairs to use for attributes
-	 */
-	function setAttributes(node, attributes) {
-	  Object.keys(attributes).forEach(function (key) {
-	    node.setAttribute(keyCase(key), attributes[key]);
-	  });
-	}
-	module.exports = exports['default'];
-
-/***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1908,7 +1997,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1918,11 +2007,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = renderPath;
 	
-	var _setAttributes = __webpack_require__(14);
+	var _setAttributes = __webpack_require__(9);
 	
 	var _setAttributes2 = _interopRequireDefault(_setAttributes);
 	
-	var _normalizeColor = __webpack_require__(15);
+	var _normalizeColor = __webpack_require__(16);
 	
 	var _normalizeColor2 = _interopRequireDefault(_normalizeColor);
 	
@@ -1959,76 +2048,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = renderPoint;
-	
-	var _setAttributes = __webpack_require__(14);
-	
-	var _setAttributes2 = _interopRequireDefault(_setAttributes);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var SIZE = 25;
-	var D = 'M499.968 214.336q-113.832 0 -212.877 38.781t-157.356 104.625 -58.311 142.29q0 62.496 39.897 119.133t112.437 97.929l48.546 27.9 -15.066 53.568q-13.392 50.778 -39.06 95.976 84.816 -35.154 153.45 -95.418l23.994 -21.204 31.806 3.348q38.502 4.464 72.54 4.464 113.832 0 212.877 -38.781t157.356 -104.625 58.311 -142.29 -58.311 -142.29 -157.356 -104.625 -212.877 -38.781z';
-	
-	/**
-	 * Create SVGElement from an annotation definition.
-	 * This is used for anntations of type `comment`.
-	 *
-	 * @param {Object} a The annotation definition
-	 * @return {SVGElement} A svg to be rendered
-	 */
-	function renderPoint(a) {
-	  var outerSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-	  var innerSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-	  var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-	  var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-	
-	  (0, _setAttributes2.default)(outerSVG, {
-	    width: SIZE,
-	    height: SIZE,
-	    x: a.x,
-	    y: a.y
-	  });
-	
-	  (0, _setAttributes2.default)(innerSVG, {
-	    width: SIZE,
-	    height: SIZE,
-	    x: 0,
-	    y: SIZE * 0.05 * -1,
-	    viewBox: '0 0 1000 1000'
-	  });
-	
-	  (0, _setAttributes2.default)(rect, {
-	    width: SIZE,
-	    height: SIZE,
-	    stroke: '#000',
-	    fill: '#ff0'
-	  });
-	
-	  (0, _setAttributes2.default)(path, {
-	    d: D,
-	    strokeWidth: 50,
-	    stroke: '#000',
-	    fill: '#fff'
-	  });
-	
-	  innerSVG.appendChild(path);
-	  outerSVG.appendChild(rect);
-	  outerSVG.appendChild(innerSVG);
-	
-	  return outerSVG;
-	}
-	module.exports = exports['default'];
-
-/***/ },
 /* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -2039,11 +2058,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = renderRect;
 	
-	var _setAttributes = __webpack_require__(14);
+	var _setAttributes = __webpack_require__(9);
 	
 	var _setAttributes2 = _interopRequireDefault(_setAttributes);
 	
-	var _normalizeColor = __webpack_require__(15);
+	var _normalizeColor = __webpack_require__(16);
 	
 	var _normalizeColor2 = _interopRequireDefault(_normalizeColor);
 	
@@ -2105,11 +2124,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = renderText;
 	
-	var _setAttributes = __webpack_require__(14);
+	var _setAttributes = __webpack_require__(9);
 	
 	var _setAttributes2 = _interopRequireDefault(_setAttributes);
 	
-	var _normalizeColor = __webpack_require__(15);
+	var _normalizeColor = __webpack_require__(16);
 	
 	var _normalizeColor2 = _interopRequireDefault(_normalizeColor);
 	
@@ -2777,7 +2796,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _PDFJSAnnotate2 = _interopRequireDefault(_PDFJSAnnotate);
 	
-	var _appendChild = __webpack_require__(11);
+	var _appendChild = __webpack_require__(13);
 	
 	var _appendChild2 = _interopRequireDefault(_appendChild);
 	
@@ -3186,7 +3205,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _PDFJSAnnotate2 = _interopRequireDefault(_PDFJSAnnotate);
 	
-	var _appendChild = __webpack_require__(11);
+	var _appendChild = __webpack_require__(13);
 	
 	var _appendChild2 = _interopRequireDefault(_appendChild);
 	
@@ -3359,7 +3378,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _PDFJSAnnotate2 = _interopRequireDefault(_PDFJSAnnotate);
 	
-	var _appendChild = __webpack_require__(11);
+	var _appendChild = __webpack_require__(13);
 	
 	var _appendChild2 = _interopRequireDefault(_appendChild);
 	
@@ -3502,7 +3521,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _PDFJSAnnotate2 = _interopRequireDefault(_PDFJSAnnotate);
 	
-	var _appendChild = __webpack_require__(11);
+	var _appendChild = __webpack_require__(13);
 	
 	var _appendChild2 = _interopRequireDefault(_appendChild);
 	
@@ -3774,7 +3793,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _PDFJSAnnotate2 = _interopRequireDefault(_PDFJSAnnotate);
 	
-	var _appendChild = __webpack_require__(11);
+	var _appendChild = __webpack_require__(13);
 	
 	var _appendChild2 = _interopRequireDefault(_appendChild);
 	

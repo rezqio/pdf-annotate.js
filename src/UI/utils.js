@@ -1,5 +1,7 @@
 import createStyleSheet from 'create-stylesheet';
 
+import { POINT_SVG_SIZE } from '../render/renderPoint';
+
 export const BORDER_COLOR = '#00BFFF';
 
 export const HIT_TEST_OFFSET = 5;
@@ -46,7 +48,7 @@ export function findSVGAtPoint(x, y) {
 
   for (let i=0, l=elements.length; i<l; i++) {
     let el = elements[i];
-    let rect = el.getBoundingClientRect();
+    let rect = el.parentNode.getBoundingClientRect(); // accommodate for scaled svg containers
 
     if (pointIntersectsRect(x, y, rect)) {
 
@@ -201,11 +203,26 @@ export function getAnnotationRect(el) {
     break;
 
     case 'rect':
+    h = parseInt(el.getAttribute('height'), 10);
+    w = parseInt(el.getAttribute('width'), 10);
+    x = parseInt(el.getAttribute('x'), 10);
+    y = parseInt(el.getAttribute('y'), 10);
+    break;
     case 'svg':
     h = parseInt(el.getAttribute('height'), 10);
     w = parseInt(el.getAttribute('width'), 10);
     x = parseInt(el.getAttribute('x'), 10);
     y = parseInt(el.getAttribute('y'), 10);
+
+    if (el.parentNode.getAttribute('data-pdf-annotate-container')) {
+      let { viewport } = getMetadata(el.parentNode);
+      if (viewport.scale > 1 && h == POINT_SVG_SIZE && w == POINT_SVG_SIZE) {
+        h *= viewport.scale;
+        w *= viewport.scale;
+        x *= viewport.scale;
+        y *= viewport.scale;
+      }
+    }
     break;
   }
 
